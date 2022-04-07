@@ -47,7 +47,7 @@ echo INFO: Building ${PROJECT}  ...
 
 GENERATOR="Xcode"
 TESTING=0
-
+BUILD_SHARED_LIBS=ON
 
 POSITIONAL=()
 
@@ -62,6 +62,10 @@ case $key in
     ;;
     -t|--test)
     TESTING=1
+    shift # past argument
+    ;;
+    -s|--static)
+    BUILD_SHARED_LIBS=OFF
     shift # past argument
     ;;
     *)    # unknown option
@@ -80,13 +84,13 @@ RESULT=$?
 if [ ${TESTING} -eq 1 ];
 then
     echo "Building debug"
-    cmake -E chdir ./${BUILD_HOME} cmake -G "${GENERATOR}" -DBUILD_TESTS=ON .. \
+    cmake -E chdir ./${BUILD_HOME} cmake -G "${GENERATOR}" -DBUILD_TESTS=ON -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS="${BUILD_SHARED_LIBS}" .. \
     && cmake --build ./${BUILD_HOME}  --config Debug \
     && cmake -E chdir ./${BUILD_HOME}  ctest -C Debug --output-on-failure
     RESULT=$?
 else
     echo "Building release"
-    cmake -E chdir ./${BUILD_HOME} cmake -G "${GENERATOR}" -DBUILD_TESTS=OFF .. \
+    cmake -E chdir ./${BUILD_HOME} cmake -G "${GENERATOR}" -DBUILD_TESTS=OFF -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS="${BUILD_SHARED_LIBS}" .. \
     && cmake --build ./${BUILD_HOME} --config Release --target package
     RESULT=$?
     cp ./${BUILD_HOME}/*.tar.gz ./upload >&1

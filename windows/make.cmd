@@ -82,6 +82,7 @@ echo INFO: Building %PROJECT%  ...
 :: set local defaults
 set "GENERATOR=Visual Studio 15 2017 Win64"
 set "TESTING=0"
+set "BUILD_SHARED_LIBS=ON"
 
 :: process arguments
 :loop
@@ -92,6 +93,10 @@ if NOT [%1]==[] (
   )
   if "%1"=="/t" (
     set "TESTING=1"
+  )
+  shift
+  if "%1"=="-s" (
+    set "BUILD_SHARED_LIBS=OFF"
   )
   shift
   goto :loop
@@ -117,7 +122,7 @@ if exist %BUILD_HOME% (
 cmake -E make_directory %BUILD_HOME%
 
 if %TESTING% equ 1 (
-  cmake -E chdir .\%BUILD_HOME% cmake -G"%GENERATOR%" -DBUILD_TESTS=ON ..^
+  cmake -E chdir .\%BUILD_HOME% cmake -G"%GENERATOR%" -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS="%BUILD_SHARED_LIBS%" ..^
   && cmake --build .\%BUILD_HOME% --config Debug^
   && cmake -E chdir .\%BUILD_HOME% ctest -C Debug --output-on-failure^
   || (
@@ -125,7 +130,7 @@ if %TESTING% equ 1 (
   )
 
 ) else (
-  cmake -E chdir .\%BUILD_HOME% cmake -G"%GENERATOR%" -DBUILD_TESTS=OFF ..^
+  cmake -E chdir .\%BUILD_HOME% cmake -G"%GENERATOR%" -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS="%BUILD_SHARED_LIBS%" ..^
   && cmake --build .\%BUILD_HOME% --config Release --target package^
   && (
     move /Y .\%BUILD_HOME%\*.zip .\upload > nul
