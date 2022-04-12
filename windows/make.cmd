@@ -80,10 +80,10 @@ echo INFO: Building %PROJECT%  ...
 
 
 :: set local defaults
-set "GENERATOR=Visual Studio 15 2017 Win64"
+set "GENERATOR=Visual Studio 17 2022"
 set "TESTING=0"
 set "BUILD_SHARED_LIBS=ON"
-
+set "ARCHITECTURE = x64"
 :: process arguments
 :loop
 if NOT [%1]==[] (
@@ -98,6 +98,8 @@ if NOT [%1]==[] (
   if "%1"=="-s" (
     set "BUILD_SHARED_LIBS=OFF"
   )
+  if "%1"=="-A" (
+    set "ARCHITECTURE=%~2")
   shift
   goto :loop
 )
@@ -122,7 +124,7 @@ if exist %BUILD_HOME% (
 cmake -E make_directory %BUILD_HOME%
 
 if %TESTING% equ 1 (
-  cmake -E chdir .\%BUILD_HOME% cmake -G"%GENERATOR%" -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS="%BUILD_SHARED_LIBS%" ..^
+  cmake -E chdir .\%BUILD_HOME% cmake -G"%GENERATOR%" -A"%ARCHITECTURE%" -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS="%BUILD_SHARED_LIBS%" ..^
   && cmake --build .\%BUILD_HOME% --config Debug^
   && cmake -E chdir .\%BUILD_HOME% ctest -C Debug --output-on-failure^
   || (
@@ -130,7 +132,7 @@ if %TESTING% equ 1 (
   )
 
 ) else (
-  cmake -E chdir .\%BUILD_HOME% cmake -G"%GENERATOR%" -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS="%BUILD_SHARED_LIBS%" ..^
+  cmake -E chdir .\%BUILD_HOME% cmake -G"%GENERATOR%" -A"%ARCHITECTURE%" -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS="%BUILD_SHARED_LIBS%" ..^
   && cmake --build .\%BUILD_HOME% --config Release --target package^
   && (
     move /Y .\%BUILD_HOME%\*.zip .\upload > nul
