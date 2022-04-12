@@ -95,10 +95,10 @@ if NOT [%1]==[] (
     set "TESTING=1"
   )
   shift
-  if "%1"=="-s" (
+  if "%1"=="/s" (
     set "BUILD_SHARED_LIBS=OFF"
   )
-  if "%1"=="-A" (
+  if "%1"=="/A" (
     set "ARCHITECTURE=%~2")
   shift
   goto :loop
