@@ -83,7 +83,7 @@ echo INFO: Building %PROJECT%  ...
 set "GENERATOR=Visual Studio 17 2022"
 set "TESTING=0"
 set "BUILD_SHARED_LIBS=ON"
-set "ARCHITECTURE = x64"
+set "ARCHITECTURE=x64"
 :: process arguments
 :loop
 if NOT [%1]==[] (
