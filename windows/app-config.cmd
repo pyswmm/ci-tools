@@ -43,15 +43,19 @@ if [%2]==[] ( set "PLATFORM=unknown"
 if [%3]==[] ( set "BUILD_ID=unknown"
 ) else ( set "BUILD_ID=%~3" )
 
-:: determine version
-for /F "tokens=1" %%v in ( 'git rev-parse --short HEAD' ) do ( set "VERSION=%%v" )
-if not defined VERSION ( echo "ERROR: VERSION could not be determined" & exit /B 1 )
+:: determine GIT_HASH
+for /F "tokens=1" %%h in ( 'git rev-parse --short HEAD' ) do ( set "GIT_HASH=%%h" )
+if not defined GIT_HASH ( echo "WARNING: GIT_HASH could not be determined" )
+
+:: determine VERSION
+for /F "tokens=1" %%v in ( '%ABS_BUILD_PATH%/%TEST_CMD% -v' ) do ( set "VERSION=%%v" )
+if not defined VERSION ( echo "WARNING: VERSION could not be determined" )
 
 
 echo {
 echo     "name" : "%PROJECT%",
 echo     "version" : "%VERSION%",
-echo     "description" : "%PLATFORM% %BUILD_ID%",
+echo     "description" : "%PLATFORM% %BUILD_ID% %GIT_HASH%",
 echo     "setup_script" : "",
 echo     "exe" : "%ABS_BUILD_PATH%/%TEST_CMD%"
 echo }

@@ -41,15 +41,15 @@ PROJ_DIR=${PWD}
 cd ${TEST_HOME}
 
 
+# use passed argument or generate a "unique" identifier
 if [ ! -z "$1" ]; then
     SUT_BUILD_ID=$1
 else
-    SUT_BUILD_ID="local"
+    SUT_BUILD_ID=$RANDOM
 fi
 
 # check if app config file exists
-if [[ ! -a "./apps/${PROJECT}-${SUT_BUILD_ID}.json" ]]
-then
+if [ ! -a "./apps/${PROJECT}-${SUT_BUILD_ID}.json" ]; then
     mkdir -p "apps"
     ${SCRIPT_HOME}/app-config.zsh "${PROJ_DIR}/${BUILD_HOME}/bin/Release" \
     ${PLATFORM} ${SUT_BUILD_ID} > "./apps/${PROJECT}-${SUT_BUILD_ID}.json"
@@ -78,31 +78,33 @@ fi
 # perform nrtest execute
 echo "INFO: Creating SUT ${SUT_BUILD_ID} artifacts"
 NRTEST_COMMAND="${NRTEST_EXECUTE_CMD} ${TEST_APP_PATH} ${TESTS} -o ${TEST_OUTPUT_PATH}"
-ls -l
 echo $NRTEST_COMMAND
 eval ${NRTEST_COMMAND}
 RESULT=$?
 
-if [[ "$RESULT" -ne 0 ]]
-then
-    echo "ERROR: nrtest execute exited with errors"
+if [ "$RESULT" -ne 0 ]; then
+    echo "WARNING: nrtest execute exited with errors"
 fi
 
 # perform nrtest compare
-echo "INFO: Comparing SUT artifacts to REF ${REF_BUILD_ID}"
-NRTEST_COMMAND="${NRTEST_COMPARE_CMD} ${TEST_OUTPUT_PATH} ${REF_OUTPUT_PATH} --rtol ${RTOL_VALUE} --atol ${ATOL_VALUE}"
-eval ${NRTEST_COMMAND}
-RESULT=$?
+if [ -z "${REF_BUILD_ID}" ]; then
+    echo "WARNING: no ref benchmark found comparison not performed"
+    RESULT=1
+else
+    echo "INFO: Comparing SUT artifacts to REF ${REF_BUILD_ID}"
+    NRTEST_COMMAND="${NRTEST_COMPARE_CMD} ${TEST_OUTPUT_PATH} ${REF_OUTPUT_PATH} --rtol ${RTOL_VALUE} --atol ${ATOL_VALUE}"
+    eval ${NRTEST_COMMAND}
+    RESULT=$?
+fi
 
 # Stage artifacts for upload
 cd ./benchmark
 
-if [[ "$RESULT" -eq 0 ]]
-then
+if [ "$RESULT" -eq 0 ]; then
     echo "INFO: nrtest compare exited successfully"
     mv receipt.json ${PROJ_DIR}/upload/receipt.json
 else
-    echo "ERROR: nrtest exited with errors"
+    echo "INFO: nrtest exited abnormally"
     tar -zcf benchmark-${PLATFORM}.tar.gz ./${PROJECT}-${SUT_BUILD_ID}
     mv benchmark-${PLATFORM}.tar.gz ${PROJ_DIR}/upload/benchmark-${PLATFORM}.tar.gz
 fi

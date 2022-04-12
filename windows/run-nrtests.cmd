@@ -29,7 +29,7 @@ where 7z > nul
 if %ERRORLEVEL% neq 0 ( echo "ERROR: 7z not installed" & exit /B 1 )
 
 :: Check that required environment variables are set
-for %%v in (PROJECT BUILD_HOME TEST_HOME PLATFORM REF_BUILD_ID) do (
+for %%v in ( PROJECT BUILD_HOME TEST_HOME PLATFORM ) do (
   if not defined %%v ( echo "ERROR: %%v must be defined" & exit /B 1 )
 )
 
@@ -46,8 +46,10 @@ set "PROJ_DIR=%CD%"
 cd %PROJ_DIR%\%TEST_HOME%
 
 :: Process optional arguments
-if [%1]==[] ( set "SUT_BUILD_ID=local"
+if [%1]==[] ( set "SUT_BUILD_ID=local_%RANDOM%"
 ) else ( set "SUT_BUILD_ID=%~1" )
+
+echo CHECK: Using SUT_BUILD_ID = %SUT_BUILD_ID%
 
 
 :: check if app config file exists
@@ -81,12 +83,6 @@ set NRTEST_EXECUTE_CMD=python.exe %NRTEST_SCRIPT_PATH%\nrtest execute
 set TEST_APP_PATH=apps\%PROJECT%-%SUT_BUILD_ID%.json
 set TEST_OUTPUT_PATH=benchmark\%PROJECT%-%SUT_BUILD_ID%
 
-:: build nrtest compare command
-set NRTEST_COMPARE_CMD=python.exe %NRTEST_SCRIPT_PATH%\nrtest compare
-set REF_OUTPUT_PATH=benchmark\%PROJECT%-%REF_BUILD_ID%
-set RTOL_VALUE=0.01
-set ATOL_VALUE=1.E-6
-
 :: change current directory to test suite
 ::cd %TEST_HOME%
 
@@ -100,29 +96,48 @@ echo INFO: Creating SUT %SUT_BUILD_ID% artifacts
 %NRTEST_EXECUTE_CMD% %TEST_APP_PATH% %TESTS% -o %TEST_OUTPUT_PATH%
 set RESULT=!ERRORLEVEL!
 
-echo.
-
-:: perform nrtest compare
 if %RESULT% neq 0 (
-    echo ERROR: nrtest execute exited with errors
+  echo WARNING: nrtest execute exited with errors
 )
 
-echo INFO: Comparing SUT artifacts to REF %REF_BUILD_ID%
-%NRTEST_COMPARE_CMD% %TEST_OUTPUT_PATH% %REF_OUTPUT_PATH% --rtol %RTOL_VALUE% --atol %ATOL_VALUE% -o benchmark\receipt.json
-set RESULT=!ERRORLEVEL!
+echo.
+
+:: perform comparison if there is a reference benchmark
+if defined REF_BUILD_ID (
+  :: build nrtest compare command
+  set NRTEST_COMPARE_CMD=python.exe %NRTEST_SCRIPT_PATH%\nrtest compare
+  set REF_OUTPUT_PATH=benchmark\%PROJECT%-%REF_BUILD_ID%
+  set RTOL_VALUE=0.01
+  set ATOL_VALUE=1.E-6
+
+  :: perform nrtest compare
+  echo INFO: Comparing SUT artifacts to REF %REF_BUILD_ID%
+  !NRTEST_COMPARE_CMD! %TEST_OUTPUT_PATH% !REF_OUTPUT_PATH! --rtol !RTOL_VALUE! --atol !ATOL_VALUE! -o benchmark\receipt-%PLATFORM%.json
+  set RESULT=!ERRORLEVEL!
+) else (
+  set RESULT=-1
+)
+
+
+echo.
 
 cd .\benchmark
 
-:: stage artifacts for upload
+:: stage SUT artifacts/receipt for upload
+echo INFO: preparing artifacts for upload
 if %RESULT% neq 0 (
-  echo ERROR: nrtest exited with errors
   7z a benchmark-%PLATFORM%.zip .\%PROJECT%-%SUT_BUILD_ID% > nul
   move /Y benchmark-%PLATFORM%.zip %PROJ_DIR%\upload > nul
 ) else (
-  echo INFO: nrtest exited successfully
-  move /Y receipt.json %PROJ_DIR%\upload > nul
+  move /Y receipt-%PLATFORM%.json %PROJ_DIR%\upload > nul
 )
 
+
 :: return user to their current dir and exit
+if %RESULT% neq 0 (
+  echo ERROR: run-nrtest exiting with errors
+) else (
+  echo INFO: run-nrtest exiting successfully
+)
 cd %PROJ_DIR%
 exit /B %RESULT%

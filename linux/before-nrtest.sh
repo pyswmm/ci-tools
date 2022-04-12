@@ -125,6 +125,7 @@ while read line; do
   fi
 done < $MANIFEST_FILE
 
+
 if [ -z "${REF_BUILD_ID}" ]; then
     echo "ERROR: REF_BUILD_ID could not be determined" ; exit 1
 fi

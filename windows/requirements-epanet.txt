@@ -14,8 +14,8 @@
 
 nrtest
 
--f https://github.com/OpenWaterAnalytics/epanet-python/releases/download/0.3.0-dev.1/epanet.output-0.2.0.dev0-cp36-cp36m-win_amd64.whl
+https://github.com/OpenWaterAnalytics/epanet-python/releases/download/0.3.0-dev.1/epanet.output-0.2.0.dev0-cp37-cp37m-win_amd64.whl
 epanet.output
 
--f https://github.com/michaeltryby/epanet-python/releases/download/0.4.0-dev/nrtest_epanet-0.6.0-py3-none-any.whl
+https://github.com/michaeltryby/epanet-python/releases/download/0.4.0-dev/nrtest_epanet-0.6.0-py3-none-any.whl
 nrtest-epanet
