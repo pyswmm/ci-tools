@@ -91,15 +91,16 @@ if NOT [%1]==[] (
     set "GENERATOR=%~2"
     shift
   )
+  if "%1"=="/A" (
+    set "ARCHITECTURE=%~2"
+    shift
+    )
   if "%1"=="/t" (
     set "TESTING=1"
   )
-  shift
   if "%1"=="/s" (
     set "BUILD_SHARED_LIBS=OFF"
   )
-  if "%1"=="/A" (
-    set "ARCHITECTURE=%~2")
   shift
   goto :loop
 )
