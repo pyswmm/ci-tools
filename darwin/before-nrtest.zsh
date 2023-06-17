@@ -63,7 +63,7 @@ mkdir benchmark
 
 # set and check URL to github repo with nrtest files
 if [ -z $NRTESTS_URL ]; then
-    NRTESTS_URL="https://github.com/OpenWaterAnalytics/${PROJECT}-nrtestsuite"
+    NRTESTS_URL="https://github.com/pyswmm/${PROJECT}-nrtestsuite"
 fi
 
 curl -Ifs -o /dev/null ${NRTESTS_URL}
