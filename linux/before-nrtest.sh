@@ -60,7 +60,7 @@ mkdir benchmark
 
 
 # use the shell var NRTEST_URL or if not set revert to default provided
-NRTESTS_URL=${NRTESTS_URL:="https://github.com/OpenWaterAnalytics/${PROJECT}-nrtestsuite"}
+NRTESTS_URL=${NRTESTS_URL:="https://github.com/pyswmm/${PROJECT}-nrtestsuite"}
 echo CHECK: using NRTESTS_URL = ${NRTESTS_URL}
 
 

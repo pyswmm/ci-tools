@@ -14,7 +14,7 @@
 ::    PROJECT
 ::    BUILD_HOME - defaults to "build"
 ::    PLATFORM
-::    NRTESTS_URL - URL to set the test suite defaults to "https://github.com/OpenWaterAnalytics/%PROJECT%-nrtestsuite"
+::    NRTESTS_URL - URL to set the test suite defaults to "https://github.com/pyswmm/%PROJECT%-nrtestsuite"
 ::
 ::  Arguments:
 ::    1 - (RELEASE_TAG) release tag for benchmark version (defaults to latest tag)
@@ -59,7 +59,7 @@ mkdir %TEST_HOME% && cd %TEST_HOME% || (
   echo ERROR: unable to create %TEST_HOME% dir & goto ERROR
 )
 
-set "DEFAULT_TESTSUITE=https://github.com/OpenWaterAnalytics/%PROJECT%-nrtestsuite"
+set "DEFAULT_TESTSUITE=https://github.com/pyswmm/%PROJECT%-nrtestsuite"
 
 
 :: check that dependencies are installed
