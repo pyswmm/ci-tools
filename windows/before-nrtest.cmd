@@ -107,7 +107,7 @@ curl -fsSL -o nrtestfiles.zip %TESTFILES_URL% && (
 )
 
 :: extract tests
-7z x nrtestfiles.zip * > nul && (
+tar -xf nrtestfiles.zip * > nul && (
   echo CHECK: testfiles extraction successful
 ) || (
   echo ERROR: file nrtestfiles.zip does not exist & goto ERROR
@@ -131,13 +131,13 @@ curl -fsSL -o benchmark.zip %BENCHFILES_URL% && (
   echo WARNING: unable to download benchmark files & goto WARNING
 )
 
-7z x benchmark.zip -obenchmark\ > nul && (
+tar -xf x benchmark.zip -obenchmark\ > nul && (
   echo CHECK: benchfiles extraction successful
 ) || (
   echo ERROR: file benchmark.zip does not exist & goto ERROR
 )
 
-7z e benchmark.zip -o. manifest.json -r > nul && (
+tar -xf e benchmark.zip -o. manifest.json -r > nul && (
   echo CHECK: manifest file extraction successful
 ) || (
   echo ERROR: file benchmark.zip does not exist & goto ERROR
