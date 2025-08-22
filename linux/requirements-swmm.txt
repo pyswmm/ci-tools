@@ -9,12 +9,8 @@
 # command: pip install -r tools/requirements-appveyor.txt
 #
 
-aenum==2.2.6
-
 nrtest==0.2.5
 
--f https://github.com/SWMM-Project/swmm-python/releases/download/v0.6.0-rc.1/swmm_toolkit-0.5.0-cp37-cp37m-linux_x86_64.whl
-swmm-toolkit==0.5.0
+swmm-toolkit==0.15.1
 
--f https://github.com/SWMM-Project/swmm-python/releases/download/v0.6.0-rc.1/nrtest_swmm-0.6.0-py3-none-any.whl
-nrtest-swmm==0.6.0
+nrtest-swmm
